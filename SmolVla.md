@@ -148,8 +148,7 @@ With full freezing, memory usage drops from ~10GB to ~2GB (~80% reduction), and 
 
 ### 3.3 Adapter Module
 
-![Adapter bottleneck design](./images/adapter-detail.svg)
-
+<img width="2160" height="840" alt="Image" src="https://github.com/user-attachments/assets/6137467a-7661-49c0-bb20-f45a8491f18e" />
 **Parameter efficiency**
 
 | Component | Parameters | Trainable | Share |
@@ -198,8 +197,7 @@ SmolVLA can predict **4–8 steps of actions at once** from a single forward pas
 
 ### 4.1 Overall Training Workflow
 
-![Training workflow: data collection to deployment](./images/training-workflow.svg)
-
+<img width="2160" height="860" alt="Image" src="https://github.com/user-attachments/assets/cfdfeedb-d8fa-42b4-b02d-562442e965b7" />
 ### 4.2 Data Preparation
 
 | Item | Value |
