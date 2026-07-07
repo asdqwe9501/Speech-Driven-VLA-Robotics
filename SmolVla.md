@@ -122,7 +122,7 @@ The only difference is what happens with the output:
 
 ### 3.2 Vision Encoder in Detail
 
-![CLIP vision encoder step by step](./images/vision-encoder.svg)
+<img width="2160" height="880" alt="Image" src="https://github.com/user-attachments/assets/2d273c8c-8eed-4e6c-8c3a-b4b1ae33ebcc" />
 
 | Property | ViT-Base | ViT-Large |
 |---|---|---|
