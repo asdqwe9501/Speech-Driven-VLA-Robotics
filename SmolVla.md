@@ -499,7 +499,7 @@ LoRA attaches low-rank adapters to the attention layers (`q_proj`, `v_proj`) and
 
 ### 6.6 Full System Integration
 
-![SmolVLA and SO-ARM 101 real-time control loop](./images/so-arm-realtime-loop.svg)
+<img width="2160" height="920" alt="Image" src="https://github.com/user-attachments/assets/2bf4de9e-ed33-4c00-a7e2-b47a09e2bff2" />
 
 The real-time control loop only invokes SmolVLA when a new action chunk is needed, executes multiple predicted steps sequentially, and keeps pace with the 20ms cycle. On a `KeyboardInterrupt`, calling `robot.stop()` to safely halt the arm is essential.
 
