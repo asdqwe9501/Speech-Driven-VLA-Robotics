@@ -112,7 +112,7 @@ Total loss = action loss + 0.1 × distillation loss (mimic large model)
 
 ### 3.1 End-to-End Pipeline: Training vs. Inference
 
-![SmolVLA training vs inference pipeline](./images/smolvla-training-inference.svg)
+<img width="2160" height="940" alt="Image" src="https://github.com/user-attachments/assets/8d6d01b2-85eb-4e74-bcab-6badbc1397e2" />
 
 The forward computation graph is **identical** during training and inference — that's a key difference from CVAE-based policies like ACT. Both sides run: raw RGB image + robot joint state → frozen CLIP encoder → trainable adapter → frozen LLaMA decoder → trainable action head → predicted action chunk. An optional text instruction can be injected alongside the visual embedding.
 
