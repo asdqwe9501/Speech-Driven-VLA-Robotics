@@ -124,6 +124,7 @@ The only difference is what happens with the output:
 
 <img width="2160" height="880" alt="Image" src="https://github.com/user-attachments/assets/2d273c8c-8eed-4e6c-8c3a-b4b1ae33ebcc" />
 
+
 | Property | ViT-Base | ViT-Large |
 |---|---|---|
 | Input image | 224×224 | 224×224 or 336×336 |
