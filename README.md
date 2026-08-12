@@ -5,8 +5,8 @@ Voice-controlled manipulation on a low-cost **SO-ARM 101** arm, driven by **Smol
 Say a color out loud — the matching policy takes over the arm. Say "stop" and it eases back to home; say "complete" and the runner exits. Two policies stay resident in VRAM, so switching costs nothing at runtime.
 
 ```
-"red ball"   →  red policy drives the arm
-"black ball" →  black policy drives the arm
+"red ball"   →  red ball model drives the arm
+"black ball" →  black ball model drives the arm
 "stop"       →  ease back to home and hold
 "complete"   →  shut down
 ```
@@ -37,7 +37,7 @@ flowchart LR
 
 | Document | Contents |
 |---|---|
-| [SmolVla.md](./SmolVla.md) | SmolVLA background — core concepts, architecture, training methodology, SO-ARM 101 integration |
+| [SmolVla.md](./SmolVla.md) | SmolVLA background — core concepts, architecture, training methodology |
 | [VoiceRun.md](./VoiceRun.md) | The voice runner — state machine, per-frame algorithm, code walkthrough, key algorithms |
 
 ---
@@ -77,6 +77,6 @@ Full flags and options: [VoiceRun.md § 8](./VoiceRun.md#8-running-it)
 ## Status
 
 - ✅ Runner passes `py_compile` and full module import
-- ✅ Red policy trained (20k steps)
-- ⚠️ Black policy not yet trained — the "black" command safely holds at home
+- ✅ Red ball model trained 
+- ⚠️ Black ball model not yet trained — the "black" command safely holds at home
 - ⚠️ Real hardware operation not yet verified
