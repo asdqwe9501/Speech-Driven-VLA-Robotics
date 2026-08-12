@@ -5,8 +5,8 @@ Voice-controlled manipulation on a low-cost **SO-ARM 101** arm, driven by **Smol
 Say a color out loud — the matching policy takes over the arm. Say "stop" and it eases back to home; say "complete" and the runner exits. Two policies stay resident in VRAM, so switching costs nothing at runtime.
 
 ```
-"red ball"   →  red ball model drives the arm
-"black ball" →  black ball model drives the arm
+"grab the red ball and put it in the box"   →  red ball model drives the arm
+"grab the black ball and put it in the box" →  black ball model drives the arm
 "stop"       →  ease back to home and hold
 "complete"   →  shut down
 ```
