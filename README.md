@@ -72,11 +72,3 @@ Full flags and options: [VoiceRun.md § 8](./VoiceRun.md#8-running-it)
 | Speech | Whisper `small`, CUDA, VAD-gated |
 | Control rate | 30 fps |
 
----
-
-## Status
-
-- ✅ Runner passes `py_compile` and full module import
-- ✅ Red ball model trained 
-- ⚠️ Black ball model not yet trained — the "black" command safely holds at home
-- ⚠️ Real hardware operation not yet verified
