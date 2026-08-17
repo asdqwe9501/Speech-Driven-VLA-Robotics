@@ -72,3 +72,9 @@ Full flags and options: [VoiceRun.md § 8](./VoiceRun.md#8-running-it)
 | Speech | Whisper `small`, CUDA, VAD-gated |
 | Control rate | 30 fps |
 
+
+## Testing video
+https://youtu.be/n0E9Sw7GYuA
+
+
+https://youtu.be/TRgkJ73UveU
