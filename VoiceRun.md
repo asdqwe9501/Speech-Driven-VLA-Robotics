@@ -4,7 +4,7 @@
 
 **Companion document:** [SmolVla.md](./SmolVla.md) (model background) · **Base framework:** [huggingface/lerobot](https://github.com/huggingface/lerobot)
 **Policy:** SmolVLA · `chunk_size=50` · 6-DOF action
-**Last updated:** 2026-08-12
+**Last updated:** 2026-10-30
 
 ---
 
@@ -29,7 +29,7 @@ The system is **two independent processes** loosely coupled through **a single f
 ```mermaid
 flowchart LR
     subgraph A["Terminal A · voice_task.py (ear)"]
-        mic["Always-on mic (VAD)"] --> stt["Whisper STT (small · cuda)"]
+        mic["Push-to-talk mic (Enter to start / stop)"] --> stt["faster-whisper STT (medium · cuda · fp16)"]
         stt --> parse["Command parsing<br/>red / black / stop / complete"]
     end
     file[("current_task.txt<br/>─────────<br/>…red ball…<br/>…black ball…<br/>__STOP__<br/>__COMPLETE__")]
@@ -47,7 +47,7 @@ flowchart LR
 
 | Element | Responsibility |
 |---|---|
-| `voice_task.py` | VAD → Whisper STT → intent parsing → atomic write of `current_task.txt` |
+| `voice_task.py` | Push-to-talk recording → silence gate → faster-whisper STT → intent parsing → atomic write of `current_task.txt` |
 | `current_task.txt` | The only interface between the two processes; holds a task string or a sentinel |
 | `voice_run.py` | Loads both policies, runs the 30fps control loop, sends actions to the arm |
 | Sentinels | `__STOP__` (ease to home and hold) · `__COMPLETE__` (exit the loop) |
@@ -121,7 +121,7 @@ flowchart TD
     sleep --> start
 ```
 
-> The stop/idle branch skips inference with `continue` and goes straight to the next frame. The switch branch calls `reset` and then falls through into the inference block. A color whose checkpoint was not supplied (e.g. `black` before it is trained) takes the stop/idle branch — the arm safely holds at home instead of erroring.
+> The stop/idle branch skips inference with `continue` and goes straight to the next frame. The switch branch calls `reset` and then falls through into the inference block. A color whose checkpoint was not supplied takes the stop/idle branch — the arm safely holds at home instead of erroring.
 
 ---
 
@@ -161,7 +161,7 @@ Declaring `robot: RobotConfig` inside the `@dataclass` lets draccus parse `--rob
 class VoiceRunConfig:
     robot: RobotConfig              # draccus parses --robot.*
     red_path: str
-    black_path: str | None = None   # optional if black is not trained yet
+    black_path: str | None = None   # optional: a missing color falls back to hold-at-home
     task_file: str = ".../current_task.txt"
     fps: int = 30
     device: str = "cuda"
@@ -282,7 +282,7 @@ Terminal A — the listener:
 python voice_task.py
 ```
 
-Terminal B — the runner. Before the black model exists, pass `--red_path` only; a spoken "black" then falls back safely to holding at home.
+Terminal B — the runner, with both color policies resident in VRAM:
 
 ```bash
 python voice_run.py \
@@ -292,22 +292,19 @@ python voice_run.py \
   --robot.cameras='{"front": {"type": "opencv", "index_or_path": 0, "width": 640, "height": 480, "fps": 30},
                     "top":   {"type": "opencv", "index_or_path": 1, "width": 640, "height": 480, "fps": 30}}' \
   --red_path=<path-to-red-checkpoint> \
+  --black_path=<path-to-black-checkpoint> \
   --rename_map='{"observation.images.front": "observation.images.camera1",
                  "observation.images.top":   "observation.images.camera2"}'
 ```
 
-Adding the black model requires **no code change** — the runner already accepts the flag, so one extra line loads it as a second resident policy:
-
-```bash
-  --black_path=<path-to-black-checkpoint>
-```
+If `--black_path` is omitted, a spoken "black" falls back safely to holding at home — no code change is needed to add or remove a policy.
 
 **Voice commands**
 
 | Say | Effect |
 |---|---|
 | "red" / "red ball" | Load-free switch to the red policy, reset, start moving |
-| "black" / "black ball" | Same for the black policy (holds at home if not supplied) |
+| "black" / "black ball" | Same for the black policy |
 | "stop" | Ease back to home and hold, keeping both models loaded |
 | "complete" | Exit the runner cleanly |
 
@@ -317,10 +314,10 @@ Adding the black model requires **no code change** — the runner already accept
 
 | Item | Status |
 |---|---|
-| `py_compile` | ✅ Pass |
-| Full import of the runner module | ✅ Pass |
-| Real hardware operation | ⚠️ Not yet verified |
-| Black checkpoint | ⚠️ Not yet trained |
+| `py_compile` / full import | ✅ Pass |
+| Real hardware operation (SO-ARM 101) | ✅ Verified — voice → `current_task.txt` → two-model switching → run / stop / complete |
+| Red and black checkpoints | ✅ Trained, both resident in VRAM |
+| End-to-end task success | **9 / 12 trials (75%)** — a trial counts only if the ball of the spoken color is grasped and placed in the box. Tallied by direct observation; no per-trial log was saved (template for future runs: [`results/eval_trials_template.csv`](./results/eval_trials_template.csv)) |
 | Missing black path fallback | ✅ Safe — "black" is treated as hold-at-home |
 
-**Reference training run:** base `smolvla_base`, 20,000 steps, batch size 8, AdamW @ lr 1e-4, grad clip 10.0, seed 1000.
+**Training run (per color policy):** base `lerobot/smolvla_base`, 30,000 steps (red, `SmolVla_dataset5`, 160 episodes) / 60,000 steps (black, `SmolVla_grab_blackball`, 89 episodes), batch size 8, AMP on, AdamW @ lr 1e-4, grad clip 10.0, seed 1000, vision encoder frozen, action expert only — ~1h17m per 10k steps on an RTX 5070 Laptop GPU (8 GB).

@@ -1,0 +1,6 @@
+# Trained and run with LeRobot 0.4.4, installed from source at commit 489cb7b.
+# LeRobot's API changes often; an unpinned install may not run voice_run.py.
+lerobot[smolvla] @ git+https://github.com/huggingface/lerobot.git@489cb7b
+faster-whisper
+sounddevice
+numpy

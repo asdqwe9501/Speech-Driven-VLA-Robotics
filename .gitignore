@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Runtime handoff file written by voice_task.py
+current_task.txt
+current_task.tmp
+
+# Training outputs and checkpoints (models live on the Hugging Face Hub)
+outputs/
+*.safetensors
+*.pth
+wandb/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
