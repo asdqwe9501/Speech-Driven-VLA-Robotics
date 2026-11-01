@@ -128,6 +128,3 @@ requirements.txt
 | Framework | [huggingface/lerobot](https://github.com/huggingface/lerobot) |
 | Speech | faster-whisper `medium`, CUDA, float16, push-to-talk |
 | Control rate | 30 fps |
-
-
-- **MuJoCo follow-up (simulation):** I reproduced the workcell in MuJoCo with three colors (red, black, light blue), trained SmolVLA on the v8 demonstrations above with an auxiliary target-position loss, added an inverse-RL noise-steering policy on top (base model unchanged), and a rule-based wrist-camera color guard that checks the color before the gripper closes. In simulation: 0 / 600 wrong-ball grasps with the color guard, 86.3% (518 / 600) full-task success; most remaining failures are grasp failures. Next: transfer to the real robot, starting with camera color calibration.
