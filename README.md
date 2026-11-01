@@ -65,7 +65,7 @@ Design notes and a code walkthrough: [VoiceRun.md](./VoiceRun.md) · Model backg
 |---|---|
 | Base model | `lerobot/smolvla_base` |
 | Datasets | Red policy: [`taeyoungss/SmolVla_dataset5`](https://huggingface.co/datasets/taeyoungss/SmolVla_dataset5) — 160 episodes, 80 with the red instruction + 80 with the black instruction; run with the red instruction only · Black policy: [`taeyoungss/SmolVla_grab_blackball`](https://huggingface.co/datasets/taeyoungss/SmolVla_grab_blackball) — 89 episodes, black only |
-| Steps | Red: 30,000 · Black: 60,000 |
+| Steps | Red: 30,000 · Black: 60,000 trained; the demo uses the 30,000-step checkpoint (`030000`) of both |
 | Batch size | 8 (16 spilled into Windows shared GPU memory, 64 ran out of memory) |
 | Precision | Mixed precision (AMP) |
 | Trainable part | Action expert only; vision encoder frozen |
@@ -100,13 +100,12 @@ python voice_task.py
 python voice_run.py \
   --robot.type=so101_follower --robot.port=COM3 \
   --robot.cameras="{ front: {type: opencv, index_or_path: 1, width: 640, height: 480, fps: 30}, top: {type: opencv, index_or_path: 0, width: 640, height: 480, fps: 30}}" \
-  --red_path=<path-to-red-checkpoint> \
-  --black_path=<path-to-black-checkpoint> \
+  --red_path=outputs/train/Smolvla_grab_the_redball/checkpoints/030000/pretrained_model \
+  --black_path=outputs/train/Smolvla_grab_the_blackball/checkpoints/030000/pretrained_model \
   --rename_map='{"observation.images.front": "observation.images.camera1",
                  "observation.images.top":   "observation.images.camera2"}'
 ```
 
-<!-- TODO: state which black checkpoint the demo used (030000 or 060000) -->
 Tested on Windows (PowerShell). `COM3` and the camera indices depend on your machine.
 
 ## Repository layout
