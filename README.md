@@ -129,17 +129,5 @@ requirements.txt
 | Speech | faster-whisper `medium`, CUDA, float16, push-to-talk |
 | Control rate | 30 fps |
 
-## Limitations and next steps
 
-- Remaining failures are grasp accuracy, not color choice. Next: more per-color demonstrations with wider ball positions, then retrain without changing the pipeline.
-- Two per-color policies do not scale to many colors. Getting one policy to follow the color word is not only a data problem; what I would change next (not yet tried on the real robot):
-  - **Data:** the criteria I used for the scripted demonstrations in my MuJoCo color-sorting follow-up (dataset v8, 1,500 episodes, 500 per color):
-    - **Same layout, every command:** each ball layout is recorded once per color command, so the scene is identical and only the instruction tells the right ball apart.
-    - **Scene mix:** three balls (1,060), two balls with one removed (219), one ball already in the box (221).
-    - **Positions:** x 12–28 cm, y −10 to +20 cm, balls at least 7 cm apart and 12 cm from the box.
-    - **Visual randomisation:** brightness ×0.6–1.4, color temperature ±15%, table and floor color, ball color ±0.05, box position ±2 cm.
-    - **Recovery demos:** 736 of 1,500 episodes deliberately miss by 2–4 cm, pause, then correct; small action noise (DART) during execution with clean labels.
-    - **Command phrasing:** basic, paraphrased and rare phrasings per color; three phrasings with unseen verbs are kept for evaluation only.
-  - **Training:** with `train_expert_only` the vision-language model that encodes the instruction stays frozen, so only the action expert can learn to use the color word. Unfreezing part of the VLM is the next setting to try.
-  - **Evaluation:** an instruction-swap test on identical scenes, scored only on the named ball.
 - **MuJoCo follow-up (simulation):** I reproduced the workcell in MuJoCo with three colors (red, black, light blue), trained SmolVLA on the v8 demonstrations above with an auxiliary target-position loss, added an inverse-RL noise-steering policy on top (base model unchanged), and a rule-based wrist-camera color guard that checks the color before the gripper closes. In simulation: 0 / 600 wrong-ball grasps with the color guard, 86.3% (518 / 600) full-task success; most remaining failures are grasp failures. Next: transfer to the real robot, starting with camera color calibration.
