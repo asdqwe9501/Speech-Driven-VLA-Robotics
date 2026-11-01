@@ -76,7 +76,7 @@ Design notes and a code walkthrough: [VoiceRun.md](./VoiceRun.md) · Model backg
 ## What went wrong, and what I changed
 
 **1. The first evaluation was measuring the wrong thing.**
-My first goal was one language-conditioned policy that picks the color named in the instruction. The original success criterion counted *any* ball placed in the box, and by that measure the policy looked successful. Swapping the instruction string at inference time showed the policy was choosing the color at random: the language input had no real effect. The cause was the dataset, not the hyperparameters — the demonstrations covered only about 8 distinct scene layouts, so the policy memorised scenes instead of grounding the color word.
+My first goal was one language-conditioned policy that picks the color named in the instruction. The original success criterion counted *any* ball placed in the box, and by that measure the policy looked successful. Swapping the instruction string at inference time showed the policy was choosing the color at random: the language input had no real effect. One likely cause is the dataset: the demonstrations covered only about 8 distinct scene layouts, so the policy could succeed by memorising scenes without using the color word. I did not separate this from the training setup (see Limitations).
 
 **What I changed:** a trial now counts only if the *named* ball ends up in the box, and the demo uses two per-color policies switched by voice. Both stay loaded in VRAM, so switching costs nothing at runtime, and `policy.reset()` clears the previous action chunk on every switch.
 
@@ -132,5 +132,8 @@ requirements.txt
 ## Limitations and next steps
 
 - Remaining failures are grasp accuracy, not color choice. Next: more per-color demonstrations with wider ball positions, then retrain without changing the pipeline.
-- Two per-color policies do not scale to many colors. A single policy that grounds the color word needs a dataset with both colors in overlapping positions in every episode.
+- Two per-color policies do not scale to many colors. Getting one policy to follow the color word is not only a data problem; what I would change next (none of it tested yet):
+  - **Data:** both balls in every episode, their positions swapped across episodes, and the same layout recorded under both instructions, so the instruction is the only cue that separates the two actions.
+  - **Training:** with `train_expert_only` the vision-language model that encodes the instruction stays frozen, so only the action expert can learn to use the color word. Unfreezing part of the VLM is the next setting to try.
+  - **Evaluation:** an instruction-swap test on identical scenes, scored only on the named ball.
 - Next project: reproducing this task in MuJoCo to train a reinforcement-learning residual policy on top of the SmolVLA baseline.
