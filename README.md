@@ -76,7 +76,7 @@ Design notes and a code walkthrough: [VoiceRun.md](./VoiceRun.md) · Model backg
 ## What went wrong, and what I changed
 
 **1. The first evaluation was measuring the wrong thing.**
-My first goal was one language-conditioned policy that picks the color named in the instruction. The original success criterion counted *any* ball placed in the box, and by that measure the policy looked successful. Swapping the instruction string at inference time showed the policy was choosing the color at random: the language input had no real effect. One likely cause is the dataset: the demonstrations covered only about 8 distinct scene layouts, so the policy could succeed by memorising scenes without using the color word. I did not separate this from the training setup (see Limitations).
+My first goal was one language-conditioned policy that picks the color named in the instruction. The original success criterion counted *any* ball placed in the box, and by that measure the policy looked successful. Swapping the instruction string at inference time showed the policy was choosing the color at random: the language input had no real effect. One likely cause is the dataset: the demonstrations covered only about 8 distinct scene layouts, so the policy could succeed by memorising scenes without using the color word. I did not separate this from the training setup.
 
 **What I changed:** a trial now counts only if the *named* ball ends up in the box, and the demo uses two per-color policies switched by voice. Both stay loaded in VRAM, so switching costs nothing at runtime, and `policy.reset()` clears the previous action chunk on every switch.
 
